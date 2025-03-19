@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Salam Hari Raya</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom, #f0e68c, #ffcc99);
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 100px;
+      color: white;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 60px;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    p {
+      font-size: 26px;
+      margin-bottom: 40px;
+      text-shadow: 1px 1px 3px #000;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 22px;
+      background: linear-gradient(to right, #228b22, #32cd32);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: transform 0.3s, background 0.3s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #2e8b57, #3cb371);
+      transform: scale(1.1);
+    }
+
+    button:active {
+      transform: scale(0.9);
+    }
+
+    .playing {
+      background: linear-gradient(to right, #ff4500, #ff6347);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 10px #ff6347; }
+      50% { box-shadow: 0 0 20px #ff4500; }
+      100% { box-shadow: 0 0 10px #ff6347; }
+    }
+
+    #confettiCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .card {
+      perspective: 1000px;
+      width: 250px;
+      cursor: pointer;
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+
+    .card.flip .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .card-front img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .card-back {
+      transform: rotateY(180deg);
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      flex-direction: column;
+    }
+
+    .card-back h2, .card-back p {
+      margin: 0 0 10px;
+    }
+
+    /* Custom backgrounds for each back */
+    .back-green { background: #32cd32; color: white; }
+    .back-peach { background: #ffcc99; color: #333; }
+    .back-blue { background: #1e90ff; color: white; }
+  </style>
+</head>
+<body>
+
+  <h1 id="greeting">Salam Aidilfitri!</h1>
+  <p>Maaf Zahir dan Batin. Semoga Syawal ini membawa keberkatan.</p>
+
+  <button id="toggleSound" onclick="toggleSound()">Mainkan Lagu Raya 🎶</button>
+
+  <audio id="laguRaya" autoplay loop muted>
+    <source src="Siti Nurhaliza - Meriah Suasana Hari Raya (Official Lyrics Video).mp3" type="audio/mpeg">
+    Browser anda tidak menyokong audio.
+  </audio>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <div id="greetingCards" style="margin-top: 50px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+    <!-- Card 1 -->
+    <div class="card">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="Posting_KV-01.jpg" alt="Front Image 1">
+        </div>
+        <div class="card-back back-green">
+          <h2>Selamat Hari Raya</h2>
+          <p>Semoga Syawal ini membawa kebahagiaan dan keberkatan kepada anda dan keluarga.</p>
+        </div>
+      </div>
+    </div>
+    <!-- Card 2 -->
+    <div class="card">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="Posting_KV-01.jpg" alt="Front Image 2">
+        </div>
+        <div class="card-back back-peach">
+          <h2>Maaf Zahir & Batin</h2>
+          <p>Mohon maaf atas segala salah dan silap. Selamat menyambut Hari Raya Aidilfitri!</p>
+        </div>
+      </div>
+    </div>
+    <!-- Card 3 -->
+    <div class="card">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="Posting_KV-01.jpg" alt="Front Image 3">
+        </div>
+        <div class="card-back back-blue">
+          <h2>Salam Aidilfitri</h2>
+          <p>Semoga Syawal ini penuh dengan kegembiraan dan kasih sayang bersama keluarga tercinta.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button id="settingsButton" style="position: fixed; top: 20px; right: 20px; padding: 10px 15px; font-size: 18px; background: #555; color: white; border: none; border-radius: 5px; cursor: pointer; z-index: 10000;">⚙️ Settings</button>
+
+  <div id="settingsModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); z-index: 10001;">
+    <h2 style="margin-top: 0;">Settings</h2>
+    <label for="backgroundMedia">Choose Background Media:</label>
+    <select id="backgroundMedia" style="margin: 10px 0; padding: 5px; font-size: 16px;">
+      <option value="image">Image</option>
+      <option value="video">Video</option>
+      <option value="color">Color</option>
+    </select>
+    <br />
+    <label for="mediaFile">Upload File:</label>
+    <input type="file" id="mediaFile" accept="image/*,video/*" style="margin: 10px 0; padding: 5px; font-size: 16px;" />
+    <br />
+    <label for="backgroundColor" style="display: none;">Choose Background Color:</label>
+    <input type="color" id="backgroundColor" style="margin: 10px 0; padding: 5px; font-size: 16px; display: none;" />
+    <br />
+    <button onclick="applySettings()" style="padding: 10px 20px; font-size: 16px; background: #228b22; color: white; border: none; border-radius: 5px; cursor: pointer;">Apply</button>
+    <button onclick="closeSettings()" style="padding: 10px 20px; font-size: 16px; background: #555; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Close</button>
+  </div>
+
+  <script>
+    let confettiInstance = null;
+    let confettiActive = false;
+
+    function toggleSound() {
+      const audio = document.getElementById("laguRaya");
+      const button = document.getElementById("toggleSound");
+      if (audio.muted) {
+        audio.muted = false;
+        audio.play();
+        button.textContent = "Hentikan Lagu Raya 🎶";
+        button.classList.add("playing");
+        button.setAttribute("aria-label", "Hentikan Lagu Raya");
+        startConfetti();
+      } else {
+        audio.muted = true;
+        audio.pause();
+        button.textContent = "Mainkan Lagu Raya 🎶";
+        button.classList.remove("playing");
+        button.setAttribute("aria-label", "Mainkan Lagu Raya");
+        stopConfetti();
+      }
+    }
+
+    function startConfetti() {
+      if (!confettiActive && confettiInstance) {
+        confettiActive = true;
+
+        const interval = setInterval(() => {
+          if (!confettiActive) {
+            clearInterval(interval);
+            return;
+          }
+          confettiInstance({
+            particleCount: Math.random() * 100 + 50,
+            angle: Math.random() * 360,
+            spread: Math.random() * 120 + 60,
+            origin: { x: Math.random(), y: Math.random() * 0.5 },
+            colors: ['#ff4500', '#ffd700', '#32cd32', '#1e90ff', '#ff69b4', '#8a2be2'],
+            scalar: Math.random() * 0.8 + 0.6
+          });
+        }, 300);
+
+        confettiInstance({ particleCount: 300, spread: 180, origin: { y: 0.6 }, colors: ['#ff4500', '#ffd700', '#32cd32'], scalar: 1.5 });
+
+        setTimeout(() => {
+          confettiInstance({
+            particleCount: 500,
+            spread: 360,
+            startVelocity: 60,
+            decay: 0.9,
+            origin: { x: 0.5, y: 0.5 },
+            colors: ['#ffffff', '#ffff00', '#ff4500', '#ff6347'],
+            scalar: 2
+          });
+        }, 1000);
+      }
+    }
+
+    function stopConfetti() {
+      if (confettiActive && confettiInstance) {
+        confettiActive = false;
+        confettiInstance.reset();
+      }
+    }
+
+    // Load confetti library
+    (function() {
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js";
+      script.onload = function() {
+        confettiInstance = confetti.create(document.getElementById('confettiCanvas'), {
+          resize: true,
+          useWorker: true
+        });
+      };
+      document.head.appendChild(script);
+    })();
+
+    // Dynamic greeting based on time
+    (function() {
+      const greetingElement = document.getElementById("greeting");
+      const hours = new Date().getHours();
+      if (hours < 12) {
+        greetingElement.textContent = "Selamat Pagi dan Salam Aidilfitri!";
+      } else if (hours < 18) {
+        greetingElement.textContent = "Selamat Petang dan Salam Aidilfitri!";
+      } else {
+        greetingElement.textContent = "Selamat Malam dan Salam Aidilfitri!";
+      }
+    })();
+
+    // Flip cards on click
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('flip');
+      });
+    });
+
+    document.getElementById("settingsButton").addEventListener("click", () => {
+      document.getElementById("settingsModal").style.display = "block";
+    });
+
+    function closeSettings() {
+      document.getElementById("settingsModal").style.display = "none";
+    }
+
+    document.getElementById("backgroundMedia").addEventListener("change", (event) => {
+      const mediaType = event.target.value;
+      const mediaFileInput = document.getElementById("mediaFile");
+      const colorPicker = document.getElementById("backgroundColor");
+
+      if (mediaType === "color") {
+        mediaFileInput.style.display = "none";
+        colorPicker.style.display = "block";
+      } else {
+        mediaFileInput.style.display = "block";
+        colorPicker.style.display = "none";
+      }
+    });
+
+    function applySettings() {
+      const mediaType = document.getElementById("backgroundMedia").value;
+
+      if (mediaType === "color") {
+        const color = document.getElementById("backgroundColor").value;
+        document.body.style.background = color;
+      } else {
+        const mediaFile = document.getElementById("mediaFile").files[0];
+        if (mediaFile) {
+          const fileURL = URL.createObjectURL(mediaFile);
+
+          if (mediaType === "image") {
+            document.body.style.background = `url('${fileURL}') no-repeat center center fixed`;
+            document.body.style.backgroundSize = "cover";
+          } else if (mediaType === "video") {
+            const videoElement = document.createElement("video");
+            videoElement.src = fileURL;
+            videoElement.autoplay = true;
+            videoElement.loop = true;
+            videoElement.muted = true;
+            videoElement.style.position = "fixed";
+            videoElement.style.top = "0";
+            videoElement.style.left = "0";
+            videoElement.style.width = "100%";
+            videoElement.style.height = "100%";
+            videoElement.style.objectFit = "cover";
+            videoElement.style.zIndex = "-1";
+
+            // Remove existing video if any
+            const existingVideo = document.querySelector("video");
+            if (existingVideo) {
+              existingVideo.remove();
+            }
+
+            document.body.appendChild(videoElement);
+          }
+        }
+      }
+
+      closeSettings();
+    }
+  </script>
+</body>
+</html>
