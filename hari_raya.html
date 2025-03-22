@@ -17,7 +17,13 @@
     h1 {
       font-size: 60px;
       margin-bottom: 20px;
-      text-shadow: 2px 2px 4px #000;
+      text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700, 0 0 30px #ff4500, 0 0 40px #ff4500;
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      0% { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700, 0 0 30px #ff4500; }
+      100% { text-shadow: 0 0 20px #ffd700, 0 0 30px #ff4500, 0 0 40px #ff6347; }
     }
 
     p {
@@ -34,17 +40,19 @@
       border: none;
       border-radius: 15px;
       cursor: pointer;
-      transition: transform 0.3s, background 0.3s;
+      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     }
 
     button:hover {
       background: linear-gradient(to right, #2e8b57, #3cb371);
       transform: scale(1.1);
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
     }
 
     button:active {
-      transform: scale(0.9);
+      transform: scale(0.95);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     .playing {
@@ -70,6 +78,7 @@
       perspective: 1000px;
       width: 250px;
       cursor: pointer;
+      transition: transform 0.3s;
     }
 
     .card-inner {
@@ -82,6 +91,10 @@
 
     .card.flip .card-inner {
       transform: rotateY(180deg);
+    }
+
+    .card:hover {
+      transform: scale(1.05);
     }
 
     .card-front, .card-back {
@@ -118,6 +131,107 @@
     .back-green { background: #32cd32; color: white; }
     .back-peach { background: #ffcc99; color: #333; }
     .back-blue { background: #1e90ff; color: white; }
+
+    /* Add overlay background for settings modal */
+    #settingsOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 10000;
+    }
+
+    /* Enhance settings modal appearance */
+    #settingsModal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #ffcc99, #ff9966);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+      z-index: 10001;
+      animation: fadeIn 0.5s ease-in-out;
+      width: 400px;
+      text-align: center;
+      color: white;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -60%); }
+      to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    #settingsModal h2 {
+      margin-top: 0;
+      font-size: 26px;
+      color: #fff;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    #settingsModal label {
+      display: block;
+      margin: 15px 0 5px;
+      font-size: 16px;
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    #settingsModal select,
+    #settingsModal input[type="file"],
+    #settingsModal input[type="color"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      border: 1px solid #fff;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.8);
+      color: #333;
+      outline: none;
+      transition: box-shadow 0.3s;
+    }
+
+    #settingsModal select:focus,
+    #settingsModal input[type="file"]:focus,
+    #settingsModal input[type="color"]:focus {
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+
+    #settingsModal button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 5px;
+      transition: background 0.3s, transform 0.2s;
+      border: none;
+    }
+
+    #settingsModal button:first-child {
+      background: #32cd32;
+      color: white;
+    }
+
+    #settingsModal button:first-child:hover {
+      background: #2e8b57;
+      transform: scale(1.05);
+    }
+
+    #settingsModal button:last-child {
+      background: #ff4500;
+      color: white;
+    }
+
+    #settingsModal button:last-child:hover {
+      background: #ff6347;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
@@ -151,23 +265,23 @@
 
   <button id="settingsButton" style="position: fixed; top: 20px; right: 20px; padding: 10px 15px; font-size: 18px; background: #555; color: white; border: none; border-radius: 5px; cursor: pointer; z-index: 10000;">⚙️ Settings</button>
 
-  <div id="settingsModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); z-index: 10001;">
-    <h2 style="margin-top: 0;">Settings</h2>
+  <!-- Add overlay for settings modal -->
+  <div id="settingsOverlay"></div>
+
+  <div id="settingsModal">
+    <h2>Settings</h2>
     <label for="backgroundMedia">Choose Background Media:</label>
-    <select id="backgroundMedia" style="margin: 10px 0; padding: 5px; font-size: 16px;">
+    <select id="backgroundMedia">
       <option value="image">Image</option>
       <option value="video">Video</option>
       <option value="color">Color</option>
     </select>
-    <br />
     <label for="mediaFile">Upload File:</label>
-    <input type="file" id="mediaFile" accept="image/*,video/*" style="margin: 10px 0; padding: 5px; font-size: 16px;" />
-    <br />
+    <input type="file" id="mediaFile" accept="image/*,video/*" />
     <label for="backgroundColor" style="display: none;">Choose Background Color:</label>
-    <input type="color" id="backgroundColor" style="margin: 10px 0; padding: 5px; font-size: 16px; display: none;" />
-    <br />
-    <button onclick="applySettings()" style="padding: 10px 20px; font-size: 16px; background: #228b22; color: white; border: none; border-radius: 5px; cursor: pointer;">Apply</button>
-    <button onclick="closeSettings()" style="padding: 10px 20px; font-size: 16px; background: #555; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Close</button>
+    <input type="color" id="backgroundColor" style="display: none;" />
+    <button onclick="applySettings()">Apply</button>
+    <button onclick="closeSettings()">Close</button>
   </div>
 
   <script>
@@ -270,10 +384,12 @@
     });
 
     document.getElementById("settingsButton").addEventListener("click", () => {
+      document.getElementById("settingsOverlay").style.display = "block";
       document.getElementById("settingsModal").style.display = "block";
     });
 
     function closeSettings() {
+      document.getElementById("settingsOverlay").style.display = "none";
       document.getElementById("settingsModal").style.display = "none";
     }
 
